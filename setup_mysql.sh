@@ -14,7 +14,7 @@ set -e
 #[INFO] -------------------------------------------------------
 #[INFO] 1. Please copy the following value into your temporal file
 #[INFO]
-#[INFO] RESOURCE GROUP is MySQL-RG-20201126014905
+#[INFO] RESOURCE GROUP is Your Azure slice resource group
 #[INFO] MySQL HOSTNAME is mysqlserver-dTvtrnTHlQ.mysql.database.azure.com
 #[INFO] MySQL USERNAME is azureuser@mysqlserver-dTvtrnTHlQ
 #[INFO] MySQL PASSWORD is !XlXveYjn29202
@@ -59,13 +59,15 @@ fi
 # MYSQL_PASSWORD= MySQL Login Password
 #########################################################
 
-RESOURCE_GRP_NAME_DATE=$(date '+%Y%m%d%T' |tr -d :)
+#commenting to create recoursegroup name with unique name as we are using Azure slice resource gorup and assigning Aure slice resource group to the variable
+RESOURCE_GROUP=Your Azure slice resource group
+#RESOURCE_GRP_NAME_DATE=$(date '+%Y%m%d%T' |tr -d :)
 
 ### Following is the correct version. It create the severname with lower case
 ### https://askubuntu.com/questions/192203/how-to-use-dev-urandom
 RANDOM_SERVER_NAME=$(head -c 12 /dev/urandom | base64 | tr -dc '[:alpha:]'|tr '[:upper:]' '[:lower:]' | fold -w 10 | head -n 1)
-
-export MYSQL_RES_GRP_NAME='MySQL-RG-'$RESOURCE_GRP_NAME_DATE
+#MYSQL_RES_GRP_NAM is assigned Azure slice resoruce grop
+export MYSQL_RES_GRP_NAME=$RESOURCE_GROUP
 export MYSQL_SERVER_NAME='mysqlserver-'$RANDOM_SERVER_NAME
 export MYSQL_USER='azureuser'
 MYSQL_PASSWORD='!'$(head -c 12 /dev/urandom | base64 | tr -dc '[:alpha:]'| fold -w 8 | head -n 1)$RANDOM
@@ -85,13 +87,13 @@ export PUBLIC_IP=$(curl ifconfig.io -4)
 #########################################################
 # When error happened following function will be executed  
 #########################################################
-
-function error_handler() {
-  az group delete --no-wait --yes --name $MYSQL_RES_GRP_NAME
-  echo "ERROR $1 occure :line no = $2" >&2
-  exit 1
-}
-trap 'error_handler $? $LINENO' ERR
+# this function deletes the resource group , so  commented it not to delete Azure slice resource group
+#function error_handler() {
+#  az group delete --no-wait --yes --name $MYSQL_RES_GRP_NAME
+#  echo "ERROR $1 occure :line no = $2" >&2
+#  exit 1
+#}
+#trap 'error_handler $? $LINENO' ERR
 
 #########################################################
 # Function Create Generic MySQL Instance
@@ -153,10 +155,10 @@ function CreateFlexibleMySQLInstance() {
 #########################################################
 # Create Azure Resource Group
 #########################################################
-
-echo "Creating Resource Group"
-az group create --name $MYSQL_RES_GRP_NAME 
-echo "Created Resource Group as " $MYSQL_RES_GRP_NAME
+#Commeting this resource group creation as we are using Azure slice resource group
+#echo "Creating Resource Group"
+#az group create --name $MYSQL_RES_GRP_NAME 
+#echo "Created Resource Group as " $MYSQL_RES_GRP_NAME
 
 #########################################################
 # Create MySQL on Azure Resource Group
@@ -199,5 +201,5 @@ yellowEcho "[INFO] Enter password:" $MYSQL_PASSWORD "[COPY&PASTE]"
 yellowEcho  "[INFO] "
 yellowEcho  "[INFO] "
 yellowEcho  "[INFO] 3. Clean up Resource (Delete MySQL DB)"
-yellowEcho  "[INFO] az group delete -n $MYSQL_RES_GRP_NAME"
+#yellowEcho  "[INFO] az group delete -n $MYSQL_RES_GRP_NAME"
 yellowEcho  "[INFO] -------------------------------------------------------"
